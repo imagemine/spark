@@ -4,7 +4,7 @@ set -e
 version=$1
 
 REPO_BASE=docker.io
-REPO_OWNER=skhatri
+REPO_OWNER=imagemine
 REPO=${REPO_BASE}/${REPO_OWNER}
 WORKDIR=$(pwd)/build
 
@@ -25,8 +25,8 @@ fetch() {
     echo "not downloading binary as it exists"
     return;
   fi;
-  local url="https://apache.mirror.digitalpacific.com.au/spark/spark-${version}/${bin_file}"
-
+  local url="https://archive.apache.org/dist/spark/spark-${version}/${bin_file}"
+  echo ${url}
   curl -sL -o ${WORKDIR}/${bin_file} ${url}
   if [[ $? -ne 0 ]]; then
     echo spark download failed.
