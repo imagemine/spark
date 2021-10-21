@@ -4,7 +4,7 @@ set -e
 version=$1
 
 REPO_BASE=docker.io
-REPO_OWNER=imagemine
+REPO_OWNER=cloudnativek8s
 REPO=${REPO_BASE}/${REPO_OWNER}
 WORKDIR=$(pwd)/build
 
