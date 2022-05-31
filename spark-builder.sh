@@ -35,7 +35,17 @@ fetch() {
 }
 
 extra_libs() {
-  curl -sL -o ${SPARK_HOME}/jars/delta-core_2.12-1.0.0.jar https://repo1.maven.org/maven2/io/delta/delta-core_2.12/1.0.0/delta-core_2.12-1.0.0.jar
+  local ver=$1
+  local lib_file="extra/default.properties"
+  if [[ -f "extra/${ver}.properties" ]];
+  then
+    lib_file="extra/${ver}.properties"
+  fi;
+  for line in $(cat ${lib_file});
+  do
+    fname=$(basename $line)
+    curl -sL -o ${SPARK_HOME}/jars/${fname} ${line}
+  done;
 }
 
 fetch
@@ -47,7 +57,7 @@ if [[ ! -d ${SPARK_HOME} ]]; then
   exit 1;
 fi;
 
-extra_libs
+extra_libs ${version}
 
 export SPARK_VERSION=${version}
 
@@ -65,6 +75,7 @@ USER ${spark_name}
 mv ${SPARK_HOME}/kubernetes/dockerfiles/spark/Dockerfile_tmp ${SPARK_HOME}/kubernetes/dockerfiles/spark/Dockerfile
 export SPARK_UID=999
 BUILD_PARAMS="-b spark_uid=999 -b spark_name=app -b java_image_tag=11-jre-slim"
+
 
 ${SPARK_HOME}/bin/docker-image-tool.sh -n -r ${REPO} -t ${SPARK_VERSION} ${BUILD_PARAMS} -p ${SPARK_HOME}/kubernetes/dockerfiles/spark/Dockerfile build
 
