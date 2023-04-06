@@ -9,16 +9,23 @@ REPO=${REPO_BASE}/${REPO_OWNER}
 WORKDIR=$(pwd)/build
 
 if [[ -z ${version} ]]; then
-  echo "spark version is required. eg 3.1.1 or 3.1.2"
+  echo "spark version is required. eg 3.2.3 or 3.3.2"
   exit 1;
 fi;
 
 if [[ ! -d ${WORKDIR} ]]; then
   mkdir ${WORKDIR}
 fi;
- 
-SPARK_HOME=${WORKDIR}/spark-${version}-bin-hadoop3.2
-bin_file="spark-${version}-bin-hadoop3.2.tgz"
+
+hadoop_minor=""
+if [[ $version =~ ^3.2.*$ ]];
+then 
+  hadoop_minor=".2"
+fi; 
+
+SPARK_HOME=${WORKDIR}/spark-${version}-bin-hadoop3${hadoop_minor}
+
+bin_file="spark-${version}-bin-hadoop3${hadoop_minor}.tgz"
 
 fetch() {
   if [[ -f ${WORKDIR}/${bin_file} ]];then
