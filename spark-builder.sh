@@ -18,9 +18,12 @@ if [[ ! -d ${WORKDIR} ]]; then
 fi;
 
 hadoop_minor=""
+
 if [[ $version =~ ^3.2.*$ ]];
 then 
   hadoop_minor=".2"
+else
+  build_file="Dockerfile"
 fi; 
 
 SPARK_HOME=${WORKDIR}/spark-${version}-bin-hadoop3${hadoop_minor}
@@ -84,12 +87,33 @@ export SPARK_UID=999
 BUILD_PARAMS="-b spark_uid=999 -b spark_name=app -b java_image_tag=11-jre-slim"
 
 
+clean_unused_files() {
+  local target=$1
+  local n=0
+  local cleaned=0
+  for jf in $(ls $target);
+  do
+    cleaned=0
+    for pom in $(jar tvf $target/$jf|grep -E "pom.(xml|properties)$"|awk -F" " '{print $8}');
+    do
+      zip -d $target/$jf $pom
+      cleaned=1
+    done;
+    if [[ $cleaned -eq 1 ]];
+    then
+      mv $target/$jf $target/lib-$n.jar
+    fi;
+    n=$((n+1))
+  done;
+}
+
+clean_unused_files $SPARK_HOME/jars
+if [[ -z $build_file ]];
+then
 ${SPARK_HOME}/bin/docker-image-tool.sh -n -r ${REPO} -t ${SPARK_VERSION} ${BUILD_PARAMS} -p ${SPARK_HOME}/kubernetes/dockerfiles/spark/Dockerfile build
-
-
-
-
-
+else
+  docker build --no-cache -t ${REPO}/spark:${SPARK_VERSION} ${SPARK_HOME} -f ${build_file}
+fi;
 
 
 
