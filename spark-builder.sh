@@ -107,11 +107,11 @@ clean_unused_files() {
   done;
 }
 
-clean_unused_files $SPARK_HOME/jars
 if [[ -z $build_file ]];
 then
 ${SPARK_HOME}/bin/docker-image-tool.sh -n -r ${REPO} -t ${SPARK_VERSION} ${BUILD_PARAMS} -p ${SPARK_HOME}/kubernetes/dockerfiles/spark/Dockerfile build
 else
+  clean_unused_files $SPARK_HOME/jars
   docker build --no-cache -t ${REPO}/spark:${SPARK_VERSION} ${SPARK_HOME} -f ${build_file}
 fi;
 
