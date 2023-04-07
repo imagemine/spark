@@ -99,7 +99,7 @@ clean_unused_files() {
       zip -d $target/$jf $pom
       cleaned=1
     done;
-    if [[ $cleaned -eq 1 ]];
+    if [[ $cleaned -eq 1 ]] || [[ $jf =~ ^[a-z]+.*$ ]];
     then
       mv $target/$jf $target/lib-$n.jar
     fi;
