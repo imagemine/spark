@@ -101,6 +101,9 @@ clean_unused_files() {
     done;
     if [[ $cleaned -eq 1 ]] || [[ $jf =~ ^[a-z]+.*$ ]];
     then
+      ok=1
+      echo $(date) $jf > RELEASE
+      zip -u $target/$jf RELEASE
       mv $target/$jf $target/lib-$n.jar
     fi;
     n=$((n+1))
