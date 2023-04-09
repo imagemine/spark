@@ -33,6 +33,7 @@ bin_file="spark-${version}-bin-hadoop3${hadoop_minor}.tgz"
 fetch() {
   if [[ -f ${WORKDIR}/${bin_file} ]];then
     echo "not downloading binary as it exists"
+    rm -rf spark-${version}-bin-hadoop3${hadoop_minor}
     return;
   fi;
   local url="https://archive.apache.org/dist/spark/spark-${version}/${bin_file}"
@@ -46,6 +47,7 @@ fetch() {
 
 extra_libs() {
   local ver=$1
+  local target=$2
   local lib_file="extra/default.properties"
   if [[ -f "extra/${ver}.properties" ]];
   then
@@ -54,7 +56,16 @@ extra_libs() {
   for line in $(cat ${lib_file});
   do
     fname=$(basename $line)
-    curl -sL -o ${SPARK_HOME}/jars/${fname} ${line}
+    patt="^"$(echo $fname|sed -E "s/[0-9]+\.[0-9]+\.[0-9]+/[0-9]+\.[0-9]+\.[0-9]+/g")"$"
+    set +e
+    matching_file=$(ls $target|grep -E $patt|head -1)
+    if [[ $matching_file != "" ]];
+    then 
+      echo removing old version ${matching_file} and replacing with ${fname}
+      rm $target/$matching_file
+    fi;
+    set -e
+    curl -sL -o ${target}/${fname} ${line}
   done;
 }
 
@@ -67,7 +78,7 @@ if [[ ! -d ${SPARK_HOME} ]]; then
   exit 1;
 fi;
 
-extra_libs ${version}
+extra_libs ${version} ${SPARK_HOME}/jars
 
 export SPARK_VERSION=${version}
 
