@@ -52,9 +52,15 @@ all() {
       then 
         for sub in $(ls extra/$v);
         do
-          ./spark-builder.sh ${v} ${mode} ${sub}
-          docker tag ${owner}/${artifact}:${v} ${owner}/${artifact}:${v}${mode_value}.${sub}-${build_version}
-          docker push ${owner}/${artifact}:${v}${mode_value}.${sub}-${build_version}
+          if [[ "$sub" == "$v" ]]; then 
+            ./spark-builder.sh ${v} ${mode}
+            docker tag ${owner}/${artifact}:${v} ${owner}/${artifact}:${v}${mode_value}-${build_version}
+            docker push ${owner}/${artifact}:${v}${mode_value}-${build_version}
+          else
+            ./spark-builder.sh ${v} ${mode} ${sub}
+            docker tag ${owner}/${artifact}:${v} ${owner}/${artifact}:${v}${mode_value}.${sub}-${build_version}
+            docker push ${owner}/${artifact}:${v}${mode_value}.${sub}-${build_version}
+          fi;
         done;
       else
         ./spark-builder.sh ${v} ${mode}
