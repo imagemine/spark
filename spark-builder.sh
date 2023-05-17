@@ -42,9 +42,10 @@ fetch() {
     fi;
     return;
   fi;
-  local url="https://archive.apache.org/dist/spark/spark-${version}/${bin_file}"
+  local spark_host="https://dlcdn.apache.org/spark"
+  local url="${spark_host}/spark-${version}/${bin_file}"
   echo ${url}
-  curl -sL -o ${WORKDIR}/${bin_file} ${url}
+  curl -L -o ${WORKDIR}/${bin_file} ${url}
   if [[ $? -ne 0 ]]; then
     echo spark download failed.
     exit 1;
