@@ -35,7 +35,11 @@ bin_file="spark-${version}-bin-hadoop3${hadoop_minor}.tgz"
 fetch() {
   if [[ -f ${WORKDIR}/${bin_file} ]];then
     echo "not downloading binary as it exists"
-    rm -rf spark-${version}-bin-hadoop3${hadoop_minor}
+    if [[ -d ${WORKDIR}/spark-${version}-bin-hadoop3${hadoop_minor} ]];
+    then
+      echo removing existing directory ${WORKDIR}/spark-${version}-bin-hadoop3${hadoop_minor}
+      rm -rf ${WORKDIR}/spark-${version}-bin-hadoop3${hadoop_minor}
+    fi;
     return;
   fi;
   local url="https://archive.apache.org/dist/spark/spark-${version}/${bin_file}"
