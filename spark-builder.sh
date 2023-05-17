@@ -2,6 +2,8 @@
 
 set -e
 version=$1
+mode=$2
+sub=$3
 
 REPO_BASE=docker.io
 REPO_OWNER=cloudnativek8s
@@ -48,10 +50,11 @@ fetch() {
 extra_libs() {
   local ver=$1
   local target=$2
+  local tag=$3
   local lib_file="extra/default.properties"
-  if [[ -f "extra/${ver}.properties" ]];
+  if [[ -f "extra/${ver}/${tag}" ]];
   then
-    lib_file="extra/${ver}.properties"
+    lib_file="extra/${ver}/${tag}"
   fi;
   for line in $(cat ${lib_file});
   do
@@ -78,7 +81,7 @@ if [[ ! -d ${SPARK_HOME} ]]; then
   exit 1;
 fi;
 
-extra_libs ${version} ${SPARK_HOME}/jars
+extra_libs ${version} ${SPARK_HOME}/jars ${sub}
 
 export SPARK_VERSION=${version}
 
@@ -115,7 +118,9 @@ clean_unused_files() {
       ok=1
       echo $(date) $jf > RELEASE
       zip -u $target/$jf RELEASE
-      mv $target/$jf $target/lib-$n.jar
+      if [[ "$mode" == "1" ]]; then
+        mv $target/$jf $target/lib-$n.jar
+      fi;
     fi;
     n=$((n+1))
   done;

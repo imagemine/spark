@@ -41,9 +41,27 @@ all() {
 
     for v in $(echo $version|sed s/","/" "/g);
     do 
-      ./spark-builder.sh ${v}
-      docker tag ${owner}/${artifact}:${v} ${owner}/${artifact}:${v}-${build_version}
-      docker push ${owner}/${artifact}:${v}-${build_version}
+      for mode in {0..1};
+      do
+      mode_value=""
+      if [[ $mode -eq 0 ]];
+      then
+        mode_value="u"
+      fi;
+      if [[ -d extra/$v ]]; 
+      then 
+        for sub in $(ls extra/$v);
+        do
+          ./spark-builder.sh ${v} ${mode} ${sub}
+          docker tag ${owner}/${artifact}:${v} ${owner}/${artifact}:${v}${mode_value}.${sub}-${build_version}
+          docker push ${owner}/${artifact}:${v}${mode_value}.${sub}-${build_version}
+        done;
+      else
+        ./spark-builder.sh ${v} ${mode}
+        docker tag ${owner}/${artifact}:${v} ${owner}/${artifact}:${v}${mode_value}-${build_version}
+        docker push ${owner}/${artifact}:${v}${mode_value}-${build_version}
+      fi;
+      done;
     done;
 
     now=$(date '+%Y-%m-%dT%H:%M:%S%z')
