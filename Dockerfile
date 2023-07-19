@@ -1,11 +1,11 @@
-FROM cloudnativek8s/microservices-java17-alpine-u10k:v1.0.26
+FROM cloudnativek8s/microservices-java17-alpine-u10k:v1.0.27
 # docker build -t spark:latest -f kubernetes/dockerfiles/spark/Dockerfile .
 ARG spark_uid=10000
 USER root
 
 
 RUN set -ex && \
-    apk update && apk add tini zip && ln -s /sbin/tini /usr/bin/tini && \
+    apk update && apk upgrade libx11 && apk add tini zip && ln -s /sbin/tini /usr/bin/tini && \
     mkdir -p /opt/spark && \
     mkdir -p /opt/spark/examples && \
     mkdir -p /opt/spark/work-dir && \
