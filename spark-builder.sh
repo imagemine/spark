@@ -108,26 +108,34 @@ BUILD_PARAMS="-b spark_uid=999 -b spark_name=app -b java_image_tag=11-jre-slim"
 
 clean_unused_files() {
   local target=$1
+  local resname=$2
+  local filter=$3
+  if [[ "$resname" == "" ]]; then
+    resname="pom.(xml|properties)$"
+  fi;
   local n=0
   local cleaned=0
   for jf in $(ls $target);
   do
-    cleaned=0
-    for pom in $(jar tvf $target/$jf|grep -E "pom.(xml|properties)$"|awk -F" " '{print $8}');
-    do
-      zip -d $target/$jf $pom
-      cleaned=1
-    done;
-    if [[ $cleaned -eq 1 ]] || [[ $jf =~ ^[a-z]+.*$ ]];
-    then
-      ok=1
-      echo $(date) $jf > RELEASE
-      zip -u $target/$jf RELEASE
-      if [[ "$mode" == "1" ]]; then
-        mv $target/$jf $target/lib-$n.jar
+    echo $jf $filter
+    if [[ "$filter" == "" ]] || [[ $jf =~ $filter ]]; then
+      cleaned=0
+      for pom in $(jar tvf $target/$jf|grep -E ${resname}|awk -F" " '{print $8}');
+      do
+        zip -d $target/$jf $pom
+        cleaned=1
+      done;
+      if [[ $cleaned -eq 1 ]] || [[ $jf =~ ^[a-z]+.*$ ]];
+      then
+        ok=1
+        echo $(date) $jf > RELEASE
+        zip -u $target/$jf RELEASE
+        if [[ "$mode" == "1" ]]; then
+          mv $target/$jf $target/lib-$n.jar
+        fi;
       fi;
+      n=$((n+1))
     fi;
-    n=$((n+1))
   done;
 }
 
@@ -135,7 +143,8 @@ if [[ -z $build_file ]];
 then
 ${SPARK_HOME}/bin/docker-image-tool.sh -n -r ${REPO} -t ${SPARK_VERSION} ${BUILD_PARAMS} -p ${SPARK_HOME}/kubernetes/dockerfiles/spark/Dockerfile build
 else
-  clean_unused_files $SPARK_HOME/jars 1
+  clean_unused_files $SPARK_HOME/jars "jquery.*.js$" "avro-ipc.*.jar"
+  clean_unused_files $SPARK_HOME/jars
   docker build --no-cache -t ${REPO}/spark:${SPARK_VERSION} ${SPARK_HOME} -f ${build_file}
 fi;
 
