@@ -3,7 +3,6 @@ FROM cloudnativek8s/microservices-java17-alpine-u10k:v1.0.30
 ARG spark_uid=10000
 USER root
 
-
 RUN set -ex && \
     apk update && apk upgrade libx11 && apk add tini zip && ln -s /sbin/tini /usr/bin/tini && \
     mkdir -p /opt/spark && \
