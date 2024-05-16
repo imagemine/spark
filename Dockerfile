@@ -4,7 +4,7 @@ ARG spark_uid=10000
 USER root
 
 RUN set -ex && \
-    apk update && apk upgrade libx11 && apk add tini zip && ln -s /sbin/tini /usr/bin/tini && \
+    apk update && apk upgrade libx11 openssl && apk add tini zip && ln -s /sbin/tini /usr/bin/tini && \
     mkdir -p /opt/spark && \
     mkdir -p /opt/spark/examples && \
     mkdir -p /opt/spark/work-dir && \
