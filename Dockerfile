@@ -1,4 +1,4 @@
-FROM cloudnativek8s/microservices-java17-alpine-u10k:v1.0.31
+FROM cloudnativek8s/microservices-java17-alpine-u10k:v1.0.34
 # docker build -t spark:latest -f kubernetes/dockerfiles/spark/Dockerfile .
 ARG spark_uid=10000
 USER root
