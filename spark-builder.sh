@@ -117,13 +117,13 @@ clean_unused_files() {
     if [[ "$filter" == "" ]] || [[ $jf =~ $filter ]]; then
       cleaned=0
       for pom in $(jar tvf $target/$jf | grep -E ${resname} | awk -F" " '{print $8}'); do
-        zip -d $target/$jf $pom
+        zip -q -d $target/$jf $pom
         cleaned=1
       done
       if [[ $cleaned -eq 1 ]] || [[ $jf =~ ^[a-z]+.*$ ]]; then
         ok=1
         echo $(date) $jf >RELEASE
-        zip -u $target/$jf RELEASE
+        zip -q -u $target/$jf RELEASE
         if [[ "$mode" == "1" ]]; then
           mv $target/$jf $target/lib-$n.jar
         fi
@@ -138,10 +138,6 @@ if [[ -z $build_file ]]; then
 else
   clean_unused_files "$SPARK_HOME"/jars "jquery.*.js$" "avro-ipc.*.jar"
   clean_unused_files "$SPARK_HOME"/jars
-
-  docker run --privileged --rm tonistiigi/binfmt --install all
-  docker buildx create --use --name builder
-  docker buildx inspect --bootstrap builder
 
   docker buildx build --platform "$PLATFORMS" --no-cache -t ${REPO}/spark:"${image_tag}" "${SPARK_HOME}" --push -f ${build_file}
 fi

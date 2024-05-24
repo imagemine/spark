@@ -32,6 +32,11 @@ create_tag() {
 
 all() {
   create_tag
+
+  docker run --privileged --rm tonistiigi/binfmt --install all
+  docker buildx create --use --name builder
+  docker buildx inspect --bootstrap builder
+
   if [[ ! -z ${build_version} ]]; then
 
     for v in $(echo $version | sed s/","/" "/g); do
