@@ -40,18 +40,18 @@ all() {
         if [[ $mode -eq 0 ]]; then
           mode_value="u"
         fi
+        image_tag="${v}${mode_value}-${build_version}"
+
         if [[ -d extra/$v ]]; then
           for sub in $(ls extra/$v); do
             if [[ "$sub" == "$v" ]]; then
-              image_tag="${owner}/${artifact}:${v}${mode_value}-${build_version}"
               ./spark-builder.sh "${v}" "${mode}" "${image_tag}"
             else
-              image_tag="${owner}/${artifact}:${v}${mode_value}.${sub}-${build_version}"
+              image_tag="${v}${mode_value}.${sub}-${build_version}"
               ./spark-builder.sh "${v}" "${mode}" "${image_tag}" "${sub}"
             fi
           done
         else
-          image_tag="${owner}/${artifact}:${v}${mode_value}-${build_version}"
           ./spark-builder.sh "${v}" "${mode}" "${image_tag}"
         fi
       done

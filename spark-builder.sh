@@ -77,7 +77,7 @@ extra_libs() {
 
 fetch
 
-tar zxf ${WORKDIR}/${bin_file} -C ${WORKDIR}
+tar zxf ${WORKDIR}/${bin_file} -C ${WORKDIR} >/dev/null 2>&1
 
 if [[ ! -d ${SPARK_HOME} ]]; then
   echo "spark home ${SPARK_HOME} expected. it is not present."
