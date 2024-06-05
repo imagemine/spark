@@ -125,6 +125,7 @@ clean_unused_files() {
         echo $(date) $jf >RELEASE
         zip -q -u $target/$jf RELEASE
         if [[ "$mode" == "1" ]]; then
+          echo $target/$jf $target/lib-$n.jar
           mv $target/$jf $target/lib-$n.jar
         fi
       fi
