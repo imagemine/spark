@@ -137,6 +137,7 @@ clean_unused_files() {
 if [[ -z $build_file ]]; then
   ${SPARK_HOME}/bin/docker-image-tool.sh -n -r ${REPO} -t ${image_tag} ${BUILD_PARAMS} -p ${SPARK_HOME}/kubernetes/dockerfiles/spark/Dockerfile build
 else
+  rm ${SPARK_HOME}/jars/snappy-java-1.1.10.3.jar
   clean_unused_files "$SPARK_HOME"/jars "jquery.*.js$" "avro-ipc.*.jar"
   clean_unused_files "$SPARK_HOME"/jars
 
