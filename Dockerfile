@@ -26,7 +26,7 @@ ENV SPARK_HOME /opt/spark
 
 WORKDIR /opt/spark/work-dir
 RUN chmod g+w /opt/spark/work-dir
-RUN chmod g+w /opt
+RUN chmod -R 777 /opt
 RUN chmod a+x /opt/decom.sh
 
 RUN chown -R ${spark_uid}:${spark_uid} /opt/spark /opt/app
