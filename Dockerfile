@@ -17,7 +17,7 @@ COPY jars /opt/spark/jars
 
 COPY bin /opt/spark/bin
 COPY sbin /opt/spark/sbin
-COPY kubernetes/dockerfiles/spark/entrypoint.sh /opt/
+COPY kubernetes/dockerfiles/spark/entrypoint.sh /tmp/
 COPY kubernetes/dockerfiles/spark/decom.sh /opt/
 COPY kubernetes/tests /opt/spark/tests
 COPY data /opt/spark/data
@@ -26,8 +26,9 @@ ENV SPARK_HOME /opt/spark
 
 WORKDIR /opt/spark/work-dir
 RUN chmod g+w /opt/spark/work-dir
-RUN chmod -R 777 /opt
 RUN chmod a+x /opt/decom.sh
+RUN sed 's/'"java_opts\.txt"'/'"\/tmp\/java_opts\.txt"'/g' /tmp/entrypoint.sh >> /opt/entrypoint.sh
+RUN chmod a+x /opt/entrypoint.sh
 
 RUN chown -R ${spark_uid}:${spark_uid} /opt/spark /opt/app
 USER ${spark_uid}
